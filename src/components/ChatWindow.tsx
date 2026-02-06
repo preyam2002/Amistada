@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-// import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   sendMessage,
@@ -112,7 +111,6 @@ export default function ChatWindow({
   const formRef = useRef<HTMLFormElement>(null);
   const [online, setOnline] = useState(true);
   const supabase = createClient();
-  // const router = useRouter();
 
   useEffect(() => {
     const container = messagesContainerRef.current;
@@ -482,8 +480,7 @@ export default function ChatWindow({
           .eq("user_id", currentUserId);
 
         // Redirect
-        // router.push("/");
-        window.location.href = "/"; // Fallback since router is commented out
+        window.location.href = "/";
         return;
       }
     }

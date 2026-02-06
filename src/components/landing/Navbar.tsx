@@ -1,6 +1,6 @@
 "use client";
 
-// import Link from "next/link";
+import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -36,18 +36,18 @@ export function Navbar() {
         </span>
       </div>
       <div className="flex items-center gap-4">
-        {/* <Link
+        <Link
           href="/login"
-          className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+          className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-white/70 dark:hover:text-white transition-colors"
         >
           Login
         </Link>
         <Link
           href="/signup"
-          className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors"
+          className="px-4 py-2 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
         >
           Sign Up
-        </Link> */}
+        </Link>
       </div>
     </motion.nav>
   );

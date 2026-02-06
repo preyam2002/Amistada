@@ -144,13 +144,13 @@ export async function sendMessage(
         aiResponse = "Please specify a search term (e.g. /search coding).";
       } else {
         const { searchUsersByTextQuery } = await import("@/lib/db/queries");
-      const matches = await searchUsersByTextQuery(query, userId);
+        const matches = await searchUsersByTextQuery(query, userId);
 
         if (matches && matches.length > 0) {
           const matchNames = matches
             .map(
-              (m: { display_name: string; match_score: number }) =>
-                `**${m.display_name}** (${m.match_score}% match)`
+              (m: { display_name: string }) =>
+                `**${m.display_name}**`
             )
             .join("\n- ");
           aiResponse = `**Found ${matches.length} matches for "${query}":**\n- ${matchNames}\n\nType **/profile** to see details of your current match.`;

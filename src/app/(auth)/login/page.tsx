@@ -3,75 +3,109 @@
 import { login, signInWithGoogle } from "../actions";
 import Link from "next/link";
 import { useState } from "react";
+import { Button } from "@/components/ui";
+import { Input } from "@/components/ui";
+import { Card } from "@/components/ui";
+import { LogIn, Mail } from "lucide-react";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async (formData: FormData) => {
+    setError(null);
+    setLoginLoading(true);
+    const res = await login(formData);
+    if (res?.error) {
+      setError(res.error);
+      setLoginLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+    await signInWithGoogle();
+    setLoading(false);
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050814] p-4">
-      <div className="w-full max-w-md bg-[#0B1020] rounded-2xl p-8 border border-[#A78BFA]/10 shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#050814] via-[#0B1020] to-[#111827] p-4">
+      <Card variant="elevated" className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#A78BFA] to-[#FB7185] mb-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-[#A78BFA] to-[#FB7185] mb-4">
+            <LogIn size={32} className="text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">
             Welcome Back
           </h1>
           <p className="text-[#9CA3AF]">Sign in to continue to Amistala</p>
         </div>
 
-        <form
-          action={async (formData) => {
-            setLoading(true);
-            const res = await login(formData);
-            if (res?.error) {
-              alert(res.error);
-              setLoading(false);
-            }
-          }}
-          className="space-y-4"
-        >
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-200 text-center">
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
+        <form action={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-[#D1D5DB] mb-1">
+            <label className="block text-sm font-medium text-[#D1D5DB] mb-2">
               Email
             </label>
-            <input
+            <Input
               name="email"
               type="email"
               required
-              className="w-full bg-[#050814] border border-[#A78BFA]/20 rounded-xl px-4 py-3 text-[#F9FAFB] focus:outline-none focus:border-[#A78BFA] transition-colors"
               placeholder="you@example.com"
+              startIcon={<Mail size={18} />}
+              disabled={loginLoading}
             />
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-[#D1D5DB] mb-1">
+            <label className="block text-sm font-medium text-[#D1D5DB] mb-2">
               Password
             </label>
-            <input
+            <Input
               name="password"
               type="password"
               required
-              className="w-full bg-[#050814] border border-[#A78BFA]/20 rounded-xl px-4 py-3 text-[#F9FAFB] focus:outline-none focus:border-[#A78BFA] transition-colors"
-              placeholder="••••••••"
+              placeholder="••••••••••"
+              disabled={loginLoading}
             />
           </div>
 
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-gradient-to-r from-[#A78BFA] to-[#FB7185] hover:opacity-90 rounded-xl font-medium text-white shadow-lg shadow-[#A78BFA]/20 transition-all disabled:opacity-50"
+            fullWidth
+            loading={loginLoading}
+            variant="primary"
+            size="lg"
           >
-            {loading ? "Logging in..." : "Log In"}
-          </button>
+            {loginLoading ? "Logging in..." : "Log In"}
+          </Button>
         </form>
 
-        <form
-          action={async () => {
-            await signInWithGoogle();
-          }}
-        >
-          <button
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#A78BFA]/20"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-[#0B1020] text-[#9CA3AF]">or continue with</span>
+          </div>
+        </div>
+
+        <form action={handleGoogleSignIn}>
+          <Button
             type="submit"
-            className="w-full mt-4 py-3 px-4 bg-[#1F2937] hover:bg-[#374151] rounded-xl font-medium text-white transition-all flex items-center justify-center gap-2"
+            fullWidth
+            loading={loading}
+            variant="secondary"
+            size="lg"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -90,19 +124,19 @@ export default function LoginPage() {
               />
             </svg>
             Sign in with Google
-          </button>
+          </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-[#9CA3AF]">
-          Don&apos;t have an account?{" "}
+        <div className="mt-8 text-center text-sm text-[#9CA3AF]">
+          Don&apos;t have an account? 
           <Link
             href="/signup"
-            className="text-[#A78BFA] hover:text-[#FB7185] transition-colors"
+            className="text-[#A78BFA] hover:text-[#FB7185] font-medium transition-colors"
           >
             Sign up
           </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

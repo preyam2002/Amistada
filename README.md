@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Amistada
 
-## Getting Started
+A 3D social platform experiment exploring spatial social interactions with Three.js and Next.js.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Framework**: Next.js 16.0.5 with App Router
+- **Language**: TypeScript 5
+- **UI Library**: React 19.2.0
+- **Styling**: Tailwind CSS v4
+- **3D Graphics**: Three.js (@react-three/fiber 9.4.2, @react-three/drei 10.7.7)
+- **Animations**: Framer Motion 12.23.24
+- **Database**: Supabase (PostgreSQL)
+- **AI Integration**: OpenAI 6.9.1
+- **Image Generation**: html-to-image 1.11.13
+- **Testing**: Vitest 4.0.15
+- **Icons**: Lucide React 0.555.0
+- **Utilities**: clsx, tailwind-merge
+
+## Project Structure
+
+```
+Amistada/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx                    # Landing/home page
+│   │   ├── layout.tsx                  # Root layout
+│   │   ├── globals.css                 # Global styles
+│   │   ├── (app)/                      # Authenticated app routes
+│   │   │   ├── layout.tsx              # App layout
+│   │   │   ├── layout-client.tsx       # Client layout wrapper
+│   │   │   ├── profile/
+│   │   │   │   ├── page.tsx            # User profile
+│   │   │   │   └── actions.ts          # Profile actions
+│   │   │   ├── rooms/
+│   │   │   │   ├── page.tsx            # Rooms list
+│   │   │   │   └── [roomId]/
+│   │   │   │       ├── page.tsx        # Room detail
+│   │   │   │       ├── page-client.tsx # Room client component
+│   │   │   │       └── actions.ts      # Room actions
+│   │   │   └── ...
+│   │   ├── (auth)/                     # Auth routes
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx
+│   │   │   ├── signup/
+│   │   │   │   └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── actions.ts
+│   │   ├── auth/
+│   │   │   └── callback/
+│   │   │       └── route.ts            # Auth callback handler
+│   │   ├── actions/
+│   │   │   ├── match.ts                # Matching actions
+│   │   │   ├── introduce.ts            # Introduction actions
+│   │   │   ├── roast.ts                # Roast actions
+│   │   │   ├── monetization.ts         # Monetization actions
+│   │   │   ├── wingman.ts              # Wingman actions
+│   │   │   └── wrapped.ts              # Wrapped actions
+│   │   └── test-page/
+│   │       └── page.tsx
+│   └── ...
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+└── vitest.config.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## NPM Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+npm run test     # Run Vitest tests
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Development
 
-## Learn More
+```bash
+# Install dependencies
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Set up environment variables
+# Required: SUPABASE_URL, SUPABASE_ANON_KEY, OPENAI_API_KEY, etc.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run development server
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Status
 
-## Deploy on Vercel
+**Early Development** - This project is in the experimental/WIP phase. Core infrastructure is being built.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Relationship to Kindred
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Amistada shares DNA with [Kindred](https://github.com/preyam2002/kindred) and aims to provide a 3D spatial layer on top of the taste-matching social graph. While Kindred focuses on media taste compatibility, Amistada explores how people can interact in shared virtual spaces.
+
+## Author
+
+**Preyam** - [GitHub](https://github.com/preyam2002)
+
+## License
+
+MIT

@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { Download, Share2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { Download, Share2, Loader2 } from "lucide-react";
+import { toPng } from "html-to-image";
 
 interface SoulCardProps {
   displayName: string;
@@ -17,10 +18,23 @@ export function SoulCard({
   avatarColor = "bg-gradient-to-br from-[#A78BFA] to-[#FB7185]",
 }: SoulCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async () => {
-    // In a real app, we'd use html2canvas or similar
-    alert("Download feature coming soon! (Requires html2canvas)");
+    if (!cardRef.current) return;
+    setDownloading(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, { cacheBust: true });
+      const link = document.createElement("a");
+      link.download = `amistada-soulcard-${displayName.toLowerCase().replace(/\s+/g, "-")}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to download image", err);
+      alert("Failed to download image. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const primaryPersona = persona[0] || "Mystery";
@@ -104,9 +118,14 @@ export function SoulCard({
       <div className="flex gap-4">
         <button
           onClick={handleDownload}
-          className="flex items-center gap-2 px-4 py-2 bg-[#A78BFA] hover:bg-[#A78BFA]/90 text-white rounded-xl transition-colors text-sm font-medium"
+          disabled={downloading}
+          className="flex items-center gap-2 px-4 py-2 bg-[#A78BFA] hover:bg-[#A78BFA]/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-colors text-sm font-medium"
         >
-          <Download size={16} />
+          {downloading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Download size={16} />
+          )}
           Save Image
         </button>
         <button className="flex items-center gap-2 px-4 py-2 bg-[#1F2937] hover:bg-[#374151] text-[#E5E7EB] rounded-xl transition-colors text-sm font-medium">

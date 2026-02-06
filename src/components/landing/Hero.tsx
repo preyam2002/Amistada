@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-// import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Scene } from "./Scene";
 import { motion } from "framer-motion";
 
@@ -53,18 +53,18 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
-          {/* <Link
+          <Link
             href="/signup"
             className="inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all hover:scale-105 shadow-lg hover:shadow-blue-500/30"
           >
             Start Chatting Now
             <ArrowRight className="w-5 h-5" />
-          </Link> */}
+          </Link>
           <Link
-            href="/about"
+            href="/login"
             className="px-8 py-4 text-base font-semibold text-zinc-900 bg-white/80 backdrop-blur-sm border border-zinc-200 rounded-full hover:bg-zinc-50 dark:bg-zinc-900/80 dark:text-white dark:border-zinc-800 dark:hover:bg-zinc-800 transition-all"
           >
-            Learn how it works
+            Sign In
           </Link>
         </motion.div>
       </div>

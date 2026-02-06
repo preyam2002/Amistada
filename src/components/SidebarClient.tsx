@@ -4,6 +4,8 @@ import Link from "next/link";
 import { LogOut, X } from "lucide-react";
 import { logout } from "@/app/(auth)/actions";
 import { IntroduceButton } from "./IntroduceButton";
+import { Button } from "@/components/ui";
+import { Avatar } from "@/components/ui";
 
 type SidebarProps = {
   rooms: {
@@ -34,12 +36,14 @@ export default function SidebarClient({
       `}
     >
       {/* Mobile close button */}
-      <button
+      <Button
         onClick={() => setIsMobileMenuOpen(false)}
-        className="md:hidden absolute top-4 right-4 text-[#9CA3AF] hover:text-white transition-colors"
+        variant="ghost"
+        size="sm"
+        className="md:hidden absolute top-4 right-4"
       >
         <X size={24} />
-      </button>
+      </Button>
 
       <div className="p-4 border-b border-[#A78BFA]/10">
         <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#A78BFA] to-[#FB7185] mb-4">
@@ -64,21 +68,11 @@ export default function SidebarClient({
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <div className="flex items-center gap-3">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  room.is_main_ai_room
-                    ? "bg-gradient-to-br from-[#A78BFA] to-[#FB7185]"
-                    : "bg-[#1F2937]"
-                }`}
-              >
-                {room.is_main_ai_room ? (
-                  <span className="text-white font-bold">AI</span>
-                ) : (
-                  <span className="text-[#9CA3AF] font-medium">
-                    {room.name.substring(0, 2).toUpperCase()}
-                  </span>
-                )}
-              </div>
+              <Avatar
+                name={room.is_main_ai_room ? "AI" : room.name}
+                variant={room.is_main_ai_room ? "gradient" : "default"}
+                size="md"
+              />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline">
                   <h3 className="text-[#F9FAFB] font-medium truncate text-sm">
@@ -104,10 +98,15 @@ export default function SidebarClient({
 
       <div className="p-4 border-t border-[#A78BFA]/10">
         <form action={logout}>
-          <button className="flex items-center gap-2 text-[#9CA3AF] hover:text-[#FB7185] transition-colors text-sm w-full px-2 py-1">
-            <LogOut size={16} />
+          <Button
+            type="submit"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-[#9CA3AF] hover:text-[#FB7185]"
+          >
+            <LogOut size={16} className="mr-2" />
             Sign Out
-          </button>
+          </Button>
         </form>
       </div>
     </div>

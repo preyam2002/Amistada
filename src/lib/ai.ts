@@ -20,7 +20,7 @@ function getOpenAIClient(): OpenAI {
 export async function inferInterests(text: string): Promise<string[]> {
   try {
     const openai = getOpenAIClient();
-    const response = await getOpenAIClient().chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
@@ -57,7 +57,7 @@ export async function inferProfileData(
         `${p.name}: ${p.description}`
     ).join("\n");
 
-    const response = await getOpenAIClient().chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { X, Share2, Loader2, Download } from "lucide-react";
+import { toPng } from "html-to-image";
 import { WrappedStats } from "@/app/actions/wrapped";
 
 type WrappedStoryProps = {
@@ -27,14 +28,14 @@ export function WrappedStory({ stats, onClose }: WrappedStoryProps) {
     if (!cardRef.current) return;
     setDownloading(true);
     try {
-      // const dataUrl = await toPng(cardRef.current, { cacheBust: true });
-      // const link = document.createElement("a");
-      // link.download = `amistada-wrapped-${new Date().getFullYear()}.png`;
-      // link.href = dataUrl;
-      // link.click();
-      console.log("Download disabled temporarily due to build issue");
+      const dataUrl = await toPng(cardRef.current, { cacheBust: true });
+      const link = document.createElement("a");
+      link.download = `amistada-wrapped-${new Date().getFullYear()}.png`;
+      link.href = dataUrl;
+      link.click();
     } catch (err) {
       console.error("Failed to download image", err);
+      alert("Failed to download image. Please try again.");
     } finally {
       setDownloading(false);
     }
