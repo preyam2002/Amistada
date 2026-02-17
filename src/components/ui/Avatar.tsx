@@ -1,4 +1,5 @@
 import { HTMLAttributes, forwardRef } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { User } from "lucide-react";
 
@@ -57,11 +58,13 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       >
         {src ? (
-          <img
+          <Image
             src={src}
             alt={alt}
+            fill
+            sizes="100%"
             className={cn(
-              "w-full h-full object-cover",
+              "object-cover",
               variant === "rounded" && "rounded-full"
             )}
           />
