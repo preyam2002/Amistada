@@ -42,9 +42,31 @@ export async function getRooms(includeArchived = false) {
     query = query.eq("archived", false);
   }
 
-  const { data } = await query;
+  const { data: rooms } = await query;
+  if (!rooms || rooms.length === 0) return [];
 
-  return data || [];
+  // Fetch last message for each room
+  const roomIds = rooms.map((r) => r.id);
+  const lastMessages: Record<string, { content: string; created_at: string }> = {};
+
+  for (const roomId of roomIds) {
+    const { data: msgs } = await supabase
+      .from("messages")
+      .select("content, created_at")
+      .eq("room_id", roomId)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (msgs && msgs[0]) {
+      lastMessages[roomId] = msgs[0];
+    }
+  }
+
+  return rooms.map((room) => ({
+    ...room,
+    last_message: lastMessages[room.id]?.content || null,
+    last_message_at: lastMessages[room.id]?.created_at || room.created_at,
+  }));
 }
 
 export async function searchUsers(query: string, excludeUserId: string) {

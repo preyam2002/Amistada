@@ -30,6 +30,7 @@ import { WrappedStory } from "@/components/WrappedStory";
 import { RoastBadge } from "@/components/RoastBadge";
 import Image from "next/image";
 import { useToast } from "@/components/Toast";
+import { useTypingIndicator } from "@/lib/useTypingIndicator";
 
 type Message = {
   id: string;
@@ -93,6 +94,8 @@ export default function ChatWindow({
   members = [],
 }: ChatWindowProps & { isBlindMode?: boolean; onMenuClick?: () => void; members?: RoomMember[] }) {
   const { toast } = useToast();
+  const currentUserName = members?.find((m) => m.id === currentUserId)?.display_name || "User";
+  const { typingUsers, startTyping, stopTyping } = useTypingIndicator(roomId, currentUserId, currentUserName);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -1133,10 +1136,10 @@ export default function ChatWindow({
           );
         })}
 
-        {/* Typing Indicator (Simulated for AI) */}
-        {isAiRoom &&
+        {/* Typing Indicator */}
+        {(isAiRoom &&
           messages.length > 0 &&
-          messages[messages.length - 1].sender_id === currentUserId && (
+          messages[messages.length - 1].sender_id === currentUserId) && (
             <div className="flex gap-3 animate-fade-in-up">
               <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 bg-gradient-to-br from-[#A78BFA] to-[#FB7185]">
                 <span className="text-white text-xs font-bold">AI</span>
@@ -1148,6 +1151,25 @@ export default function ChatWindow({
               </div>
             </div>
           )}
+
+        {/* Real user typing indicators */}
+        {typingUsers.length > 0 && (
+          <div className="flex gap-3 animate-fade-in-up">
+            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-1 bg-[#1F2937]">
+              <UserIcon size={14} className="text-[#9CA3AF]" />
+            </div>
+            <div className="bg-[#1F2937] px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-[#A78BFA] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                <span className="w-1.5 h-1.5 bg-[#A78BFA] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                <span className="w-1.5 h-1.5 bg-[#A78BFA] rounded-full animate-bounce"></span>
+              </div>
+              <span className="text-xs text-[#9CA3AF]">
+                {typingUsers.map((u) => u.displayName).join(", ")} typing...
+              </span>
+            </div>
+          </div>
+        )}
 
         <div ref={messagesEndRef} />
       </div>
@@ -1290,7 +1312,11 @@ export default function ChatWindow({
             value={newMessage}
             ref={inputRef}
             maxLength={MAX_MESSAGE_LENGTH}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              if (e.target.value.trim()) startTyping();
+              else stopTyping();
+            }}
             onKeyDown={(e) => {
               if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
                 e.preventDefault();

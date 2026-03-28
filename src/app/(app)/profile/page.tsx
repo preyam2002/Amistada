@@ -7,6 +7,7 @@ import { Input } from "@/components/ui";
 import { Textarea } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Badge } from "@/components/ui";
+import { SoulCard } from "@/components/SoulCard";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -38,6 +39,18 @@ export default async function ProfilePage() {
     <div className="flex-1 overflow-y-auto bg-[#050814] p-8">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold text-[#F9FAFB] mb-8">Your Profile</h1>
+
+        {/* Soul Card Preview */}
+        {profile.persona && profile.persona.length > 0 && (
+          <div className="mb-8 flex justify-center">
+            <SoulCard
+              displayName={profile.display_name || "User"}
+              persona={profile.persona || []}
+              interests={profile.interests || []}
+              avatarColor={profile.avatar_color}
+            />
+          </div>
+        )}
 
         <Card variant="elevated" className="p-8">
           <form action={updateProfile} className="space-y-8">
