@@ -1,6 +1,4 @@
 "use server";
-import * as fs from "fs";
-import * as path from "path";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -10,8 +8,16 @@ import { ensureUserOnboarding } from "@/lib/onboarding";
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
+
+  if (!email || !password) {
+    return { error: "Email and password are required." };
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: "Please enter a valid email address." };
+  }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -19,10 +25,6 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    fs.appendFileSync(
-      path.join(process.cwd(), "debug.log"),
-      `Login error: ${error.message}\n`
-    );
     return { error: error.message };
   }
 
@@ -33,9 +35,25 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
-  const displayName = formData.get("displayName") as string;
+  const displayName = (formData.get("displayName") as string)?.trim();
+
+  if (!email || !password || !displayName) {
+    return { error: "All fields are required." };
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: "Please enter a valid email address." };
+  }
+
+  if (password.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
+
+  if (displayName.length < 2 || displayName.length > 50) {
+    return { error: "Display name must be 2-50 characters." };
+  }
 
   const { error, data } = await supabase.auth.signUp({
     email,

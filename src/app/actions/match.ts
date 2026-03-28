@@ -4,15 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { ensureUserOnboarding } from "@/lib/onboarding";
 import { generateAIResponse } from "@/lib/ai";
 import { redirect } from "next/navigation";
-import * as fs from "fs";
-import * as path from "path";
-
-function log(msg: string) {
-  fs.appendFileSync(
-    path.join(process.cwd(), "debug.log"),
-    `${new Date().toISOString()} - ${msg}\n`
-  );
-}
 
 export async function findAndCreateMatch(query?: string) {
   const supabase = await createClient();
@@ -23,8 +14,6 @@ export async function findAndCreateMatch(query?: string) {
   if (!user) {
     redirect("/login");
   }
-
-  log(`Starting findAndCreateMatch for user ${user.id}, query: ${query || "none"}`);
 
   // Ensure profile + main AI room exist
   await ensureUserOnboarding(
@@ -42,7 +31,6 @@ export async function findAndCreateMatch(query?: string) {
     .single();
 
   if (!userProfile?.embedding) {
-    log(`User ${user.id} has no embedding yet`);
     // Redirect to AI room to chat more and build profile
     const { data: aiRoom } = await supabase
       .from("rooms")
@@ -57,8 +45,6 @@ export async function findAndCreateMatch(query?: string) {
     redirect("/rooms");
   }
 
-  log(`User ${user.id} has embedding, searching for matches`);
-
   // Search for matching users using embedding similarity
   const { data: similarUsers, error: matchError } = await supabase.rpc("match_profiles", {
     query_embedding: userProfile.embedding,
@@ -68,16 +54,12 @@ export async function findAndCreateMatch(query?: string) {
   });
 
   if (matchError) {
-    log(`Error finding matches: ${matchError.message}`);
     return { error: "Failed to find matches. Please try again." };
   }
 
   if (!similarUsers || similarUsers.length === 0) {
-    log(`No matches found for user ${user.id}`);
     return { error: "no_match" };
   }
-
-  log(`Found ${similarUsers.length} potential matches`);
 
   // Filter out users we already have rooms with
   const { data: existingRoomMembers } = await supabase
@@ -109,11 +91,8 @@ export async function findAndCreateMatch(query?: string) {
   const availableMatch = similarUsers.find((u: { id: string }) => !alreadyMatchedUserIds.has(u.id));
 
   if (!availableMatch) {
-    log(`No new matches available. Already matched with: ${Array.from(alreadyMatchedUserIds).join(", ")}`);
     return { error: "no_new_matches" };
   }
-
-  log(`Creating match with user ${availableMatch.id}`);
 
   // Get the match user's profile
   const { data: matchProfile } = await supabase
@@ -123,7 +102,6 @@ export async function findAndCreateMatch(query?: string) {
     .single();
 
   if (!matchProfile) {
-    log(`Match user ${availableMatch.id} has no profile`);
     return { error: "Match profile not found. Please try again." };
   }
 
@@ -139,11 +117,8 @@ export async function findAndCreateMatch(query?: string) {
     .single();
 
   if (roomError) {
-    log(`Error creating room: ${roomError.message}`);
     return { error: "Failed to create match room. Please try again." };
   }
-
-  log(`Created room ${newRoom.id}`);
 
   // Add both users to the room
   const { error: memberError1 } = await supabase
@@ -154,7 +129,6 @@ export async function findAndCreateMatch(query?: string) {
     });
 
   if (memberError1) {
-    log(`Error adding user to room: ${memberError1.message}`);
     return { error: "Failed to join room. Please try again." };
   }
 
@@ -166,11 +140,8 @@ export async function findAndCreateMatch(query?: string) {
     });
 
   if (memberError2) {
-    log(`Error adding match user to room: ${memberError2.message}`);
     return { error: "Failed to add match to room. Please try again." };
   }
-
-  log(`Both users added to room ${newRoom.id}`);
 
   // Generate AI introduction message
   const usersInfo = [
@@ -198,16 +169,12 @@ export async function findAndCreateMatch(query?: string) {
     user2Chats: user2Chats?.map((m) => m.content) || [],
   });
 
-  log(`Generated intro message: ${introMessage.substring(0, 100)}...`);
-
   // Send the introduction message
   await supabase.from("messages").insert({
     room_id: newRoom.id,
     content: introMessage,
     is_ai: true,
   });
-
-  log(`Intro message sent to room ${newRoom.id}`);
 
   // Create progressive reveal entry
   await supabase.from("profile_reveals").insert({
@@ -221,8 +188,6 @@ export async function findAndCreateMatch(query?: string) {
     viewer_id: user.id,
     level: 0,
   });
-
-  log(`Created profile reveals for both users`);
 
   // Redirect to the new room
   redirect(`/rooms/${newRoom.id}`);

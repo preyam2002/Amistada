@@ -1,9 +1,9 @@
 export default async function RoomsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { error } = searchParams;
+  const { error } = await searchParams;
   const errorMessage = Array.isArray(error) ? error[0] : error;
 
   return (

@@ -24,6 +24,11 @@ export async function sendMessage(
 
   const userId = user.id;
 
+  // Validate message content
+  if (content && content.length > 2000) {
+    return { error: "Message is too long (max 2000 characters)." };
+  }
+
   // 1. Check for slash commands (only if content is present and not just media)
   const lowerContent = content?.trim().toLowerCase() || "";
 

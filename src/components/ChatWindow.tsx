@@ -29,6 +29,7 @@ import { CompatibilityCard } from "@/components/CompatibilityCard";
 import { WrappedStory } from "@/components/WrappedStory";
 import { RoastBadge } from "@/components/RoastBadge";
 import Image from "next/image";
+import { useToast } from "@/components/Toast";
 
 type Message = {
   id: string;
@@ -45,12 +46,19 @@ type Message = {
   };
 };
 
+type RoomMember = {
+  id: string;
+  display_name: string;
+  avatar_color: string;
+};
+
 type ChatWindowProps = {
   roomId: string;
   initialMessages: Message[];
   currentUserId: string;
   roomName: string;
   isAiRoom: boolean;
+  members?: RoomMember[];
 };
 
 const slashCommands = [
@@ -82,7 +90,9 @@ export default function ChatWindow({
   isAiRoom,
   isBlindMode = false,
   onMenuClick,
-}: ChatWindowProps & { isBlindMode?: boolean; onMenuClick?: () => void }) {
+  members = [],
+}: ChatWindowProps & { isBlindMode?: boolean; onMenuClick?: () => void; members?: RoomMember[] }) {
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -234,9 +244,7 @@ export default function ChatWindow({
         setShowCompatibility(true);
       } else {
         console.error(error);
-        alert(
-          "Not enough conversation yet to judge compatibility! Keep chatting."
-        );
+        toast("Not enough conversation yet to judge compatibility! Keep chatting.", "warning");
       }
     } catch (e) {
       console.error(e);
@@ -253,7 +261,7 @@ export default function ChatWindow({
         setWrappedStats(stats);
         setShowWrapped(true);
       } else {
-        alert(error || "Could not generate Wrapped.");
+        toast(error || "Could not generate Wrapped.", "error");
       }
     } catch (e) {
       console.error(e);
@@ -270,7 +278,7 @@ export default function ChatWindow({
         setRoastData(roast);
         setShowRoast(true);
       } else {
-        alert(error || "Could not generate Roast.");
+        toast(error || "Could not generate Roast.", "error");
       }
     } catch (e) {
       console.error(e);
@@ -317,7 +325,7 @@ export default function ChatWindow({
       setIsRecording(true);
     } catch (e) {
       console.error("Error accessing microphone:", e);
-      alert("Could not access microphone. Please check permissions.");
+      toast("Could not access microphone. Please check permissions.", "error");
     }
   };
 
@@ -346,7 +354,7 @@ export default function ChatWindow({
       setTimeout(() => setCopiedMessageId((prev) => (prev === id ? null : prev)), 1200);
     } catch (e) {
       console.error("Copy failed", e);
-      alert("Could not copy message");
+      toast("Could not copy message", "error");
     }
   };
 
@@ -365,10 +373,10 @@ export default function ChatWindow({
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       const url = `${origin}/rooms/${roomId}`;
       await navigator.clipboard.writeText(url);
-      alert("Room link copied");
+      toast("Room link copied!", "success");
     } catch (e) {
       console.error("Copy room link failed", e);
-      alert("Could not copy link");
+      toast("Could not copy link", "error");
     } finally {
       setCopyingRoom(false);
     }
@@ -376,7 +384,7 @@ export default function ChatWindow({
 
   const handleExportChat = () => {
     if (!messages.length) {
-      alert("No messages to export");
+      toast("No messages to export", "warning");
       return;
     }
     const lines = messages.map((m) => {
@@ -399,7 +407,7 @@ export default function ChatWindow({
 
     if (!online) {
       if (mediaFile) {
-        alert("Offline: cannot queue media uploads. Please retry when online.");
+        toast("Offline: cannot queue media uploads. Please retry when online.", "warning");
         return;
       }
       setQueuedMessages((prev) => [...prev, newMessage.trim()]);
@@ -510,7 +518,7 @@ export default function ChatWindow({
         mediaType = mediaFile.type.startsWith("image/") ? "image" : "audio";
       } catch (error) {
         console.error("Error uploading media:", error);
-        alert("Failed to upload media");
+        toast("Failed to upload media", "error");
         setSending(false);
         return;
       }
@@ -519,7 +527,7 @@ export default function ChatWindow({
     const res = await sendMessage(roomId, newMessage, mediaUrl, mediaType);
 
     if (res && "error" in res && res.error) {
-      alert(res.error);
+      toast(res.error, "error");
       setSending(false);
       return;
     }
@@ -635,7 +643,7 @@ export default function ChatWindow({
     if (res.summary) {
       setSummary(res.summary);
     } else {
-      alert(res.error || "Could not generate summary");
+      toast(res.error || "Could not generate summary", "error");
     }
     setLoadingSummary(false);
   }
@@ -646,9 +654,9 @@ export default function ChatWindow({
     );
     const res = await giveKudosAction(receiverId);
     if (res.success) {
-      alert(`✨ Kudos given to ${receiverName}!`);
+      toast(`Kudos given to ${receiverName}!`, "success");
     } else {
-      alert(res.error || "Failed to give kudos");
+      toast(res.error || "Failed to give kudos", "error");
     }
   }
 
@@ -765,7 +773,10 @@ export default function ChatWindow({
                   online ? "bg-green-500" : "bg-[#FBBF24]"
                 }`}
               ></span>
-              {online ? "Online" : "Offline"}
+              {!isAiRoom && members && members.length > 0
+                ? members.filter((m) => m.id !== currentUserId).map((m) => m.display_name).join(", ")
+                : online ? "Online" : "Offline"
+              }
             </p>
           </div>
         </div>
@@ -829,8 +840,8 @@ export default function ChatWindow({
                     "@/app/actions/monetization"
                   );
                   const res = await explainMatch(roomId);
-                  if (res.explanation) alert(res.explanation);
-                  else alert(res.error);
+                  if (res.explanation) toast(res.explanation, "info");
+                  else toast(res.error || "Failed to explain match", "error");
                 }}
                 className="text-[#FBBF24] hover:text-white transition-colors p-2 rounded-full hover:bg-[#FBBF24]/10"
                 title="Why did we match? (Gold Feature)"
@@ -1000,8 +1011,8 @@ export default function ChatWindow({
                             msg.sender_id!
                           );
                           if (res.success)
-                            alert(`❤️ Super Liked ${senderName}!`);
-                          else alert(res.error);
+                            toast(`Super Liked ${senderName}!`, "success");
+                          else toast(res.error || "Failed to send", "error");
                         }}
                         className="text-[10px] text-[#F43F5E] hover:text-[#E11D48] transition-colors flex items-center gap-0.5"
                         title="Super Like (Cost: 50)"

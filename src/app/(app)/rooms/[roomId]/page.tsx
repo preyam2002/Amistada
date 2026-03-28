@@ -5,9 +5,9 @@ import RoomPageClient from "./page-client";
 export default async function RoomPage({
   params,
 }: {
-  params: { roomId: string };
+  params: Promise<{ roomId: string }>;
 }) {
-  const { roomId } = params;
+  const { roomId } = await params;
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,6 +37,22 @@ export default async function RoomPage({
     .eq("room_id", roomId)
     .order("created_at", { ascending: true });
 
+  // Fetch room members
+  const { data: members } = await supabase
+    .from("room_members")
+    .select("user_id, profiles(display_name, avatar_color)")
+    .eq("room_id", roomId)
+    .is("left_at", null);
+
+  const roomMembers = (members || []).map((m) => {
+    const profile = Array.isArray(m.profiles) ? m.profiles[0] : m.profiles;
+    return {
+      id: m.user_id,
+      display_name: profile?.display_name || "User",
+      avatar_color: profile?.avatar_color || "",
+    };
+  });
+
   return (
     <RoomPageClient
       roomId={roomId}
@@ -44,6 +60,7 @@ export default async function RoomPage({
       currentUserId={currentUserId}
       roomName={room.name}
       isAiRoom={room.is_main_ai_room}
+      members={roomMembers}
     />
   );
 }

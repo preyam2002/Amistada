@@ -16,6 +16,7 @@ export async function updateProfile(formData: FormData) {
   }
 
   const displayName = formData.get("display_name") as string;
+  const bio = formData.get("bio") as string;
   const interestsRaw = formData.get("interests") as string;
   const lookingForRaw = formData.get("looking_for") as string;
 
@@ -35,6 +36,7 @@ export async function updateProfile(formData: FormData) {
 
   await updateUserProfileData(user.id, {
     display_name: displayName,
+    bio,
     interests,
     looking_for: lookingFor,
   });

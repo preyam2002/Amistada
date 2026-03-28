@@ -19,7 +19,7 @@ export async function getProfile(userId: string) {
   return data;
 }
 
-export async function getRooms() {
+export async function getRooms(includeArchived = false) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,18 +27,22 @@ export async function getRooms() {
 
   if (!user) return [];
 
-  // Get rooms where user is a member
-  const { data } = await supabase
+  let query = supabase
     .from("rooms")
     .select(
       `
       *,
-      room_members!inner(user_id)
+      room_members!inner(user_id, left_at, is_archived)
     `
     )
     .eq("room_members.user_id", user!.id)
-    .eq("archived", false)
     .order("created_at", { ascending: false });
+
+  if (!includeArchived) {
+    query = query.eq("archived", false);
+  }
+
+  const { data } = await query;
 
   return data || [];
 }
@@ -62,6 +66,7 @@ export async function updateUserProfileData(
   userId: string,
   data: {
     display_name?: string;
+    bio?: string;
     interests?: string[];
     persona?: string[];
     looking_for?: string[];
@@ -124,6 +129,10 @@ export async function updateUserProfileData(
 
   if (data.display_name) {
     updateData.display_name = data.display_name;
+  }
+
+  if (data.bio !== undefined) {
+    (updateData as Record<string, unknown>).bio = data.bio;
   }
 
   if (embedding.length > 0) {

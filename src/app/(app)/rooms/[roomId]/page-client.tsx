@@ -18,12 +18,19 @@ type Message = {
   };
 };
 
+type RoomMember = {
+  id: string;
+  display_name: string;
+  avatar_color: string;
+};
+
 type RoomPageClientProps = {
   roomId: string;
   initialMessages: Message[];
   currentUserId: string;
   roomName: string;
   isAiRoom: boolean;
+  members?: RoomMember[];
 };
 
 export default function RoomPageClient({
@@ -32,6 +39,7 @@ export default function RoomPageClient({
   currentUserId,
   roomName,
   isAiRoom,
+  members = [],
 }: RoomPageClientProps) {
   const { setIsMobileMenuOpen } = useLayout();
 
@@ -42,6 +50,7 @@ export default function RoomPageClient({
       currentUserId={currentUserId}
       roomName={roomName}
       isAiRoom={isAiRoom}
+      members={members}
       onMenuClick={() => setIsMobileMenuOpen(true)}
     />
   );

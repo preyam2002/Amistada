@@ -13,8 +13,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Amistada - AI-Powered Connections",
+  title: {
+    default: "Amistada - AI-Powered Connections",
+    template: "%s | Amistada",
+  },
   description: "Connect with people who truly understand you. Amistada uses advanced AI to match you with like-minded individuals for meaningful conversations.",
+  keywords: ["social", "AI matching", "connections", "chat", "conversations"],
+  openGraph: {
+    title: "Amistada - AI-Powered Connections",
+    description: "Connect with people who truly understand you.",
+    type: "website",
+    siteName: "Amistada",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Amistada - AI-Powered Connections",
+    description: "Connect with people who truly understand you.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

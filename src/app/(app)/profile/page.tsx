@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { updateProfile } from "./actions";
-import { User, Heart, Search, Sparkles, Save } from "lucide-react";
+import { User, Heart, Search, Sparkles, Save, FileText } from "lucide-react";
 import { Card } from "@/components/ui";
 import { Input } from "@/components/ui";
 import { Textarea } from "@/components/ui";
@@ -79,6 +79,24 @@ export default async function ProfilePage() {
               <p className="text-xs text-[#9CA3AF]">
                 Amistala uses these to find you matches.
               </p>
+            </div>
+
+            {/* Bio */}
+            <div className="space-y-3">
+              <label
+                htmlFor="bio"
+                className="flex items-center gap-2 text-sm font-medium text-[#60A5FA]"
+              >
+                <FileText size={16} />
+                Bio
+              </label>
+              <Textarea
+                id="bio"
+                name="bio"
+                defaultValue={profile.bio || ""}
+                placeholder="Tell people a bit about yourself..."
+                rows={3}
+              />
             </div>
 
             {/* Looking For */}
