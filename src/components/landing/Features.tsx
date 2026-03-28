@@ -14,37 +14,37 @@ const features = [
   {
     name: "AI-Powered Matching",
     description:
-      "Our smart algorithms analyze your interests and communication style to find your perfect conversation partners.",
+      "Vector embeddings analyze your interests, personality, and communication style to find genuinely compatible conversation partners.",
     icon: Sparkles,
   },
   {
-    name: "Real-time Translation",
+    name: "Smart Introductions",
     description:
-      "Chat with anyone, anywhere. Language barriers are a thing of the past with instant message translation.",
+      "Our AI crafts personalized introductions between matches, highlighting shared interests and conversation starters.",
     icon: Globe,
   },
   {
-    name: "Secure & Private",
+    name: "Personality Archetypes",
     description:
-      "Your conversations are end-to-end encrypted. We prioritize your privacy and data security above all else.",
+      "Discover your persona — Poet, Architect, Explorer, Sage, and more — through natural conversation with our AI onboarding.",
     icon: Shield,
   },
   {
-    name: "Group Communities",
+    name: "Group Rooms",
     description:
-      "Join vibrant communities based on shared hobbies, professional interests, or life experiences.",
+      "Chat in AI-moderated introduction rooms or create topic-based spaces for communities with shared passions.",
     icon: Users,
   },
   {
-    name: "Lightning Fast",
+    name: "AI Wingman",
     description:
-      "Built on modern infrastructure for instant message delivery and seamless video calls.",
+      "Conversations going quiet? Our AI wingman steps in with thoughtful prompts to keep the connection flowing.",
     icon: Zap,
   },
   {
-    name: "Rich Media Support",
+    name: "Wrapped & Roasts",
     description:
-      "Share photos, videos, and files effortlessly. Express yourself beyond just text.",
+      "Get your personalized chat Wrapped with stats and insights, or let the AI roast your conversation style.",
     icon: MessageSquare,
   },
 ];

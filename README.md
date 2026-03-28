@@ -1,21 +1,31 @@
 # Amistada
 
-A 3D social platform experiment exploring spatial social interactions with Three.js and Next.js.
+AI-powered social matching platform that connects people through personality analysis, vector similarity, and meaningful conversations. Features real-time chat, AI-facilitated introductions, and personality archetypes.
+
+## Features
+
+- **Vector-based matching** — pgvector embeddings find genuinely compatible people based on interests, personality, and communication style
+- **AI onboarding** — conversational AI (Amistala) learns about you through natural chat, infers interests and personality archetype
+- **Smart introductions** — AI crafts personalized intros highlighting shared interests between matched users
+- **Real-time chat** — Supabase Realtime powers instant messaging in AI rooms and introduction groups
+- **Wingman AI** — detects stalled conversations and intervenes with thoughtful prompts
+- **Wrapped & Roasts** — personalized stats analysis and humorous AI-generated roasts of your chat patterns
+- **8 personality archetypes** — The Poet, Architect, Healer, Explorer, Jester, Sage, Rebel, Creator
+- **Progressive profile reveal** — gradually learn about your match as conversations deepen
+- **Slash commands** — `/next`, `/wrapped`, `/roast`, `/catchup`, `/help` and more
+- **Monetization ready** — gift system, feature credits, reputation/kudos tracking
 
 ## Tech Stack
 
-- **Framework**: Next.js 16.0.5 with App Router
-- **Language**: TypeScript 5
-- **UI Library**: React 19.2.0
-- **Styling**: Tailwind CSS v4
-- **3D Graphics**: Three.js (@react-three/fiber 9.4.2, @react-three/drei 10.7.7)
-- **Animations**: Framer Motion 12.23.24
-- **Database**: Supabase (PostgreSQL)
-- **AI Integration**: OpenAI 6.9.1
-- **Image Generation**: html-to-image 1.11.13
-- **Testing**: Vitest 4.0.15
-- **Icons**: Lucide React 0.555.0
-- **Utilities**: clsx, tailwind-merge
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16, React 19, TypeScript |
+| Styling | Tailwind CSS v4, Framer Motion |
+| 3D | Three.js, React Three Fiber/Drei |
+| Database | Supabase (PostgreSQL + pgvector) |
+| Auth | Supabase Auth (email + Google OAuth) |
+| AI | OpenAI gpt-4o-mini, text-embedding-3-small |
+| Testing | Vitest (unit), Playwright (E2E) |
 
 ## Project Structure
 
@@ -88,13 +98,15 @@ npm install
 npm run dev
 ```
 
-## Status
+## Architecture
 
-**Early Development** - This project is in the experimental/WIP phase. Core infrastructure is being built.
+Uses **Next.js Server Actions** instead of REST APIs. All backend logic (matching, AI, monetization) runs as server actions. Supabase handles authentication, database, and real-time message delivery.
 
-## Relationship to Kindred
+**Matching flow:** User chats with AI → interests/persona inferred → embedding generated → pgvector cosine similarity finds matches → AI creates introduction room with personalized opener.
 
-Amistada shares DNA with [Kindred](https://github.com/preyam2002/kindred) and aims to provide a 3D spatial layer on top of the taste-matching social graph. While Kindred focuses on media taste compatibility, Amistada explores how people can interact in shared virtual spaces.
+## Related
+
+Sister project to [Kindred](https://github.com/preyam2002/kindred) — Kindred focuses on media taste compatibility, Amistada explores AI-facilitated personality matching.
 
 ## Author
 
